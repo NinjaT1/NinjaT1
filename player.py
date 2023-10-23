@@ -4,25 +4,30 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
 
-
 def browse_media_file():
     global media_path
-    file_path = filedialog.askopenfilename(filetypes=[("Video Files", "*.mp4 *.mkv *.avi")])
-    if file_path:
-        media_path = file_path
-        update_media()
+    try:
+        file_path = filedialog.askopenfilename(filetypes=[("Video Files", "*.mp4 *.mkv *.avi")])
+        if file_path:
+            media_path = file_path
+            update_media()
+    except Exception as e:
+        print(f"Error while browsing for media file: {e}")
 
-
-# noinspection PyGlobalUndefined
 def update_media():
     global media
-    media = instance.media_new(media_path)
-    player.set_media(media)
-    play_media()
-
+    try:
+        media = instance.media_new(media_path)
+        player.set_media(media)
+        play_media()
+    except Exception as e:
+        print(f"Error while updating media: {e}")
 
 def play_media():
-    player.play()
+    try:
+        player.play()
+    except Exception as e:
+        print(f"Error while playing media: {e}")
 
 
 # Create the main application window
@@ -33,19 +38,22 @@ root.title("Media Player")
 libvlc_path = r'E:\VLC\libvlc.dll'
 media_path = ""  # Initialize with an empty string
 
-# Create a VLC instance and media player
-instance = vlc.Instance(f'--no-xlib --plugin-path={libvlc_path}')
-player = instance.media_player_new()
+try:
+    # Create a VLC instance and media player
+    instance = vlc.Instance(f'--no-xlib --plugin-path={libvlc_path}')
+    player = instance.media_player_new()
 
-# Initialize media with an empty path
-update_media()
+    # Initialize media with an empty path
+    update_media()
+except Exception as e:
+    print(f"Error while creating VLC instance and media player: {e}")
 
 # Create a label to display time information
 time_label = tk.Label(root, text="", font=("Helvetica", 16))
 time_label.pack(pady=10)
 
 # Create a progress bar to show time elapsed
-progress_bar = ttk.Progressbar(root, length=300, mode='determinate')
+progress_bar = ttk.Progressbar(root, length=500, mode='determinate')
 progress_bar.pack(pady=10)
 
 
@@ -161,5 +169,8 @@ browse_button.pack(pady=10)
 # Close the Tkinter window when exiting
 root.protocol("WM_DELETE_WINDOW", root.destroy)
 
-# Run the Tkinter main loop
-root.mainloop()
+
+try:
+    root.mainloop()
+except Exception as e:
+    print(f"Error while running Tkinter main loop: {e}")
